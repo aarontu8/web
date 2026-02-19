@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>尚泓升學教室 Sun Home Academy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* --------------------------------- */
+        /* 管理系統 & 登入 Modal 樣式 */
+        /* --------------------------------- */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .admin-panel.open {
+            right: 0;
+        }
+
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 2001;
+            font-size: 0.75rem;
+        }
+
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+
+        .login-modal.show {
+            display: flex;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            min-width: 300px;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 10px;
+        }
+
+        .cancel-btn {
+            background: #e2e8f0;
+            color: #333;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .admin-header {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .admin-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .admin-section h3 {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.85rem;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .update-btn {
+            background: #48bb78;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .delete-btn {
+            background: #e65252;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        .add-news-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        /* --------------------------------- */
+        /* Lightbox 樣式 */
+        /* --------------------------------- */
+        .image-modal {
+            display: none; 
+            position: fixed; 
+            z-index: 4000; 
+            padding-top: 60px; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.9);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        /* --------------------------------- */
+        /* 一般頁面樣式 (Hero, News, Courses, etc.) */
+        /* --------------------------------- */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .hero {
+            height: 65vh;
+            min-height: 320px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding-top: 70px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+
+        .news {
+            padding: 100px 20px;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 60px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: 0.3s;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .news-image {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* 最新消息註記樣式 */
+        .news-info {
+            padding: 15px;
+            text-align: center;
+            background: #fff;
+            border-top: 1px solid #eee;
+        }
+
+        .news-subject {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .news-content-text {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .courses {
+            padding: 100px 20px;
+        }
+
+        .course-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+            gap: 15px;
+        }
+
+        .course-tab {
+            padding: 12px 25px;
+            border: none;
+            background: #f1f3f4;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .course-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .course-content {
+            display: none;
+        }
+
+        .course-content.active {
+            display: block;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .course-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .course-title {
+            margin-bottom: 10px;
+        }
+
+        .course-description {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .course-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+
+        .course-features li {
+            padding: 5px 0;
+            color: #555;
+        }
+
+        .course-features li::before {
+            content: '✓';
+            color: #48bb78;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        .course-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .contact {
+            padding: 100px 20px;
+            background: #f8f9fa;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .branches {
+            padding: 100px 20px;
+        }
+
+        .branch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 40px;
+        }
+
+        .locations-section {
+            padding: 60px 20px;
+            background: #fff;
+        }
+
+        .locations-section .section-title {
+            margin-bottom: 10px;
+        }
+
+        .locations-section .section-subtitle {
+            margin-bottom: 40px;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .location-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 24px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .location-card h4 {
+            color: #667eea;
+            font-size: 1.25rem;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .location-card .addr, .location-card .tel {
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .location-card .walk-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .location-card .walk-list {
+            list-style: none;
+            font-size: 0.85rem;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .location-card .walk-list li::before {
+            content: '• ';
+            color: #667eea;
+        }
+
+        .map-wrap {
+            margin-top: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 220px;
+        }
+
+        .map-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .phone-lines {
+            display: block;
+        }
+        .phone-line {
+            display: block;
+            line-height: 1.6;
+        }
+        .phone-campus {
+            display: inline-block;
+            width: 3em;
+            text-align: left;
+        }
+
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .hero h1 { font-size: 2.5rem; }
+            .contact-content { grid-template-columns: 1fr; }
+            .branch-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: flex !important;
+                gap: 12px;
+                flex-wrap: wrap;
+            }
+            .nav-link {
+                font-size: 0.85rem;
+            }
+            .hero h1 { font-size: 2.2rem; }
+            .contact-content { grid-template-columns: 1fr; }
+            .branch-grid { grid-template-columns: 1fr; }
+            .locations-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="imageModal" class="image-modal">
+        <span class="close-btn" onclick="closeLightbox()">×</span>
+        <img class="modal-content" id="fullImage">
+    </div>
+
+    <div class="login-modal" id="loginModal">
+        <div class="login-box">
+            <h3>🔐 管理員登入</h3>
+            <input type="password" class="password-input" id="passwordInput" placeholder="請輸入密碼">
+            <div>
+                <button class="login-btn" onclick="checkPassword()">登入</button>
+                <button class="cancel-btn" onclick="closeLoginModal()">取消</button>
+            </div>
+            <div id="errorMessage" style="color: red; margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <button class="admin-toggle" onclick="showLoginModal()">管理網站 ⚙️</button>
+
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <div>內容管理系統</div>
+            <div style="font-size: 0.8rem; opacity: 0.95; margin-top: 6px;">上次更新網站：<span id="displayLastUpdated">尚未更新</span></div>
+        </div>
+        
+        <div class="admin-section">
+            <button class="update-btn" style="width: 100%; background: #e65252;" onclick="hideAdminPanel()">關閉面板</button>
+        </div>
+
+        <div class="admin-section">
+            <h3>最新消息管理</h3>
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">不限制則數。圖片請貼上「Google Drive 分享連結」（檔案需設為「知道連結的任何人可檢視」），網頁會自動轉換並顯示；也可上傳 PNG 或貼一般圖片網址。標題與內容請手動填寫。</p>
+            <div id="newsItemsContainer"></div>
+            <button class="add-news-btn" onclick="addNewsItem()">➕ 新增一則消息</button>
+        </div>
+
+        <div class="admin-section">
+            <h3>全站標題與聯絡資訊</h3>
+            <div class="form-group">
+                <label>首頁大標題</label>
+                <input type="text" id="adminMainTitle">
+            </div>
+            <div class="form-group">
+                <label>首頁副標題</label>
+                <input type="text" id="adminMainSubtitle">
+            </div>
+            <div class="form-group">
+                <label>聯絡電話（可輸入兩行，例：府中校、站前校）</label>
+                <textarea id="adminPhone" rows="2" placeholder="府中校(02) 22710029&#10;站前校(02) 29697793"></textarea>
+            </div>
+            <div class="form-group">
+                <label>聯絡 Email</label>
+                <input type="text" id="adminEmail">
+            </div>
+        </div>
+
+        <div class="admin-section">
+            <button class="update-btn" style="width: 100%; background: #38a169;" onclick="applyChanges()">💾 儲存並發佈</button>
+        </div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo" id="displayLogo">尚泓升學教室</a>
+            <ul class="nav-menu">
+                <li><a href="#home" class="nav-link">首頁</a></li>
+                <li><a href="#news" class="nav-link">最新消息</a></li>
+                <li><a href="#courses" class="nav-link">核心課程</a></li>
+                <li><a href="#locations" class="nav-link">校區位置</a></li>
+                <li><a href="#contact" class="nav-link">連絡方式</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header id="home" class="hero">
+        <div class="hero-content">
+            <h1 id="displayHeroTitle">尚泓升學教室 Sun Home Academy</h1>
+            <p id="displayHeroSubtitle">專業升學輔導，成就每一個夢想</p>
+        </div>
+    </header>
+
+    <section class="locations-section" id="locations">
+        <div class="container">
+            <h2 class="section-title">校區位置</h2>
+            <p class="section-subtitle">兩校區鄰近捷運與學校，歡迎預約參觀</p>
+            <div class="locations-grid">
+                <div class="location-card">
+                    <h4>站前校</h4>
+                    <p class="addr">地址：新北市板橋區文化路一段31號 2樓（板橋捷運站一號出口對面）</p>
+                    <p class="tel">電話：02-29697793</p>
+                    <p class="walk-title">步行時間</p>
+                    <ul class="walk-list">
+                        <li>板橋高中：3分鐘</li>
+                        <li>板橋國小：5分鐘</li>
+                        <li>板橋國中：20分鐘</li>
+                        <li>文德國小：20分鐘</li>
+                        <li>新埔國中：21分鐘</li>
+                    </ul>
+                    <div class="map-wrap">
+                        <iframe src="https://www.google.com/maps?q=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E6%96%87%E5%8C%96%E8%B7%AF%E4%B8%80%E6%AE%B531%E8%99%9F&t=&z=16&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="站前校位置"></iframe>
+                    </div>
+                </div>
+                <div class="location-card">
+                    <h4>府中校</h4>
+                    <p class="addr">地址：新北市板橋區實踐路93巷7號2樓（近實踐路7-11）</p>
+                    <p class="tel">電話：02-22710029</p>
+                    <p class="walk-title">步行時間</p>
+                    <ul class="walk-list">
+                        <li>實踐國小：2分鐘</li>
+                        <li>忠孝國中：4分鐘</li>
+                        <li>後埔國小：4分鐘</li>
+                        <li>海山國小：10分鐘</li>
+                        <li>重慶國中：11分鐘</li>
+                        <li>重慶國小：15分鐘</li>
+                        <li>海山國中：15分鐘</li>
+                    </ul>
+                    <div class="map-wrap">
+                        <iframe src="https://www.google.com/maps?q=%E6%96%B0%E5%8C%97%E5%B8%82%E6%9D%BF%E6%A9%8B%E5%8D%80%E5%AF%A6%E8%B7%B5%E8%B7%AF93%E5%B7%B77%E8%99%9F&t=&z=16&ie=UTF8&iwloc=&output=embed" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="府中校位置"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="news">
+        <div class="container">
+            <h2 class="section-title">最新消息</h2>
+            <p class="section-subtitle">掌握尚泓升學教室的最新資訊</p>
+            <div class="news-grid" id="newsGrid"></div>
+        </div>
+    </section>
+
+    <section id="courses" class="courses">
+        <div class="container">
+            <h2 class="section-title">核心課程</h2>
+            <p class="section-subtitle">從國小到高中，為您的孩子提供最專業、系統化的升學輔導</p>
+            
+            <div class="course-tabs">
+                <button class="course-tab active" data-tab="tab-high">高中部</button>
+                <button class="course-tab" data-tab="tab-junior">國中部</button>
+                <button class="course-tab" data-tab="tab-primary-school">國小部</button>
+                <button class="course-tab" data-tab="tab-exam-gifted">英檢/數理資優</button>
+            </div>
+
+            <div id="tab-high" class="course-content active">
+                <div class="course-grid">
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/xK2Q4vmh/1.png" alt="大學學測全科衝刺" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">🎓</div>
+                        <h4 class="course-title">大學學測全科衝刺</h4>
+                        <p class="course-description">針對學測考試內容進行高效總複習與模擬訓練，助您突破分數限制。</p>
+                        <ul class="course-features">
+                            <li>歷屆試題精講</li>
+                            <li>弱科一對一輔導</li>
+                            <li>專業志願分析</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">預約試聽</a>
+                    </div>
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/tpMNpGMh/image.png" alt="高中數理專攻班" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">⚛️</div>
+                        <h4 class="course-title">高中數理專攻班</h4>
+                        <p class="course-description">由名師帶領，專攻高中數學、物理、化學，讓複雜概念變簡單。</p>
+                        <ul class="course-features">
+                            <li>獨家解題技巧</li>
+                            <li>邏輯思維訓練</li>
+                            <li>實驗課程輔助</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">了解詳情</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-junior" class="course-content">
+                <div class="course-grid">
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/CpDdT7Nc/1.png" alt="國中會考衝刺班" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">📚</div>
+                        <h4 class="course-title">國中會考衝刺班</h4>
+                        <p class="course-description">全科精選總複習，精準掌握會考命題趨勢，衝刺高分。</p>
+                        <ul class="course-features">
+                            <li>系統化知識梳理</li>
+                            <li>寫作與閱讀訓練</li>
+                            <li>考前心理建設</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">預約試聽</a>
+                    </div>
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/0VYwQLx7/image.png" alt="超理解數學教室" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">🔢</div>
+                        <h4 class="course-title">超理解數學教室</h4>
+                        <p class="course-description">獨家教學法，從根本建立學生的數學邏輯，告別死記硬背。</p>
+                        <ul class="course-features">
+                            <li>培養深度思考力</li>
+                            <li>客製化進度安排</li>
+                            <li>銜接高中課程</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">了解詳情</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-primary-school" class="course-content">
+                <div class="course-grid">
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/ycDdspVh/image.png" alt="國小全科/習慣養成" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">🌟</div>
+                        <h4 class="course-title">國小全科/習慣養成</h4>
+                        <p class="course-description">為國小階段學生提供紮實的課業輔導，培養良好學習習慣，為國中打下堅實基礎。</p>
+                        <ul class="course-features">
+                            <li>課業習慣養成</li>
+                            <li>國語文素養提升</li>
+                            <li>學校進度掌控</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">預約試聽</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-exam-gifted" class="course-content">
+                <div class="course-grid">
+                     <div class="course-card">
+                        <img src="https://i.ibb.co/Vc075dfg/2.png" alt="數理資優菁英班" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">🔬</div>
+                        <h4 class="course-title">數理資優菁英班</h4>
+                        <p class="course-description">針對有潛力的小學生，提供進階的數學與自然科學課程，激發邏輯思維與解題能力。</p>
+                        <ul class="course-features">
+                            <li>邏輯數學啟蒙</li>
+                            <li>資優班考試準備</li>
+                            <li>銜接國中先修</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">了解詳情</a>
+                    </div>
+                    <div class="course-card">
+                        <img src="https://i.ibb.co/BHJrbqg3/1.png" alt="劍橋/全民英檢班" class="course-image" onclick="openLightbox(this.src, this.alt)">
+                        <div class="course-icon">🇬🇧</div>
+                        <h4 class="course-title">劍橋/全民英檢班</h4>
+                        <p class="course-description">專業英檢中心，專為 YLE、GEPT 設計課程，高通過率保證，聽說讀寫全方位訓練。</p>
+                        <ul class="course-features">
+                            <li>聽說讀寫全方位訓練</li>
+                            <li>模擬考與解題</li>
+                            <li>國際認證準備</li>
+                        </ul>
+                        <a href="#contact" class="course-btn">了解詳情</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3>預約試聽諮詢</h3>
+                    <p>歡迎留下您的聯絡資訊，我們將有專業顧問與您聯繫。</p>
+                    <div style="margin-top: 40px;">
+                        <p>📞 電話：<span id="displayPhone" class="phone-lines"></span></p>
+                        <p>✉️ Email：<span id="displayEmail">service@sunhome.edu.tw</span></p>
+                    </div>
+                </div>
+                <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
+                    <form id="contactForm">
+                        <div class="form-group"><label>學生姓名</label><input type="text" name="name" required placeholder="請填寫姓名"></div>
+                        <div class="form-group"><label>聯絡電話</label><input type="tel" name="phone" required placeholder="請填寫電話"></div>
+                        <div class="form-group"><label>就讀年級</label><input type="text" name="grade" placeholder="例：國一、高二"></div>
+                        <div class="form-group"><label>咨詢科目</label><input type="text" name="subject" placeholder="例：數學、英文、會考"></div>
+                        <div class="form-group"><label>諮詢需求</label><textarea name="message" rows="3" placeholder="請簡述需求"></textarea></div>
+                        <div id="formMessage" style="margin-bottom: 10px; font-size: 0.9rem; display: none;"></div>
+                        <button type="submit" class="update-btn" style="width: 100%; background: #667eea;">送出申請</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© 2024 尚泓升學教室 Sun Home Academy.</p>
+    </footer>
+
+    <script>
+        // 表單寄信：Formspree 表單 ID（https://formspree.io/f/xpqjlwwl）
+        const FORMSPREE_ID = 'xpqjlwwl';
+        const ADMIN_PASSWORD_HASH = "918c3c4df31297a2dcf215baf69198526a35e5576b0234bff5ad7137c9554095";
+        
+        let websiteData = {
+            mainTitle: '尚泓升學教室 Sun Home Academy',
+            mainSubtitle: '專業升學輔導，成就每一個夢想',
+            phone: '府中校(02) 22710029\n站前校(02) 29697793',
+            email: 'service@sunhome.edu.tw',
+            lastUpdated: '',
+            news: [
+                { image: 'https://i.ibb.co/KpbJ3y1m/new-1.png', subject: '2024 夏季班開課資訊', content: '' },
+                { image: 'https://i.ibb.co/4gPrnr97/new-2.png', subject: '會考落點講座', content: '' }
+            ]
+        };
+
+        // Google Drive 分享連結轉成網頁可顯示的圖片網址（使用 thumbnail 格式，避免 403）
+        function formatDriveUrl(url) {
+            if (!url) return '';
+            var s = (url || '').trim();
+            if (s.indexOf('drive.google.com') === -1) return url;
+            var id = (s.match(/\/d\/([a-zA-Z0-9_-]+)/) || [])[1] || (s.match(/[?&]id=([a-zA-Z0-9_-]+)/) || [])[1];
+            if (id) return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w1200';
+            return url;
+        }
+
+        function updateFrontEnd() {
+            document.getElementById('displayHeroTitle').textContent = websiteData.mainTitle;
+            document.getElementById('displayHeroSubtitle').textContent = websiteData.mainSubtitle;
+            var raw = (websiteData.phone || '').trim();
+            var lines = raw.split(/\r?\n/).filter(function(l) { return l.trim(); });
+            var phoneHtml = '';
+            lines.forEach(function(line) {
+                line = line.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                var campus = line.substring(0, 3);
+                var rest = line.substring(3);
+                phoneHtml += '<div class="phone-line"><span class="phone-campus">' + campus + '</span>' + rest + '</div>';
+            });
+            if (!phoneHtml) {
+                phoneHtml = '<div class="phone-line"><span class="phone-campus">府中校</span>(02) 22710029</div><div class="phone-line"><span class="phone-campus">站前校</span>(02) 29697793</div>';
+            }
+            document.getElementById('displayPhone').innerHTML = phoneHtml;
+            document.getElementById('displayEmail').textContent = websiteData.email;
+
+            const newsGrid = document.getElementById('newsGrid');
+            newsGrid.innerHTML = '';
+            websiteData.news.forEach((item, index) => {
+                if (!item.image && !item.subject && !item.content) return;
+                const realImg = item.image ? formatDriveUrl(item.image) : '';
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                if (realImg) card.onclick = () => openLightbox(realImg);
+                card.innerHTML = `
+                    ${realImg ? `<img src="${realImg}" class="news-image">` : ''}
+                    <div class="news-info">
+                        <div class="news-subject">${(item.subject || '最新消息').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                        ${item.content ? `<p class="news-content-text">${item.content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')}</p>` : ''}
+                    </div>
+                `;
+                newsGrid.appendChild(card);
+            });
+        }
+
+        function renderNewsItemsInAdmin() {
+            const container = document.getElementById('newsItemsContainer');
+            container.innerHTML = '';
+            websiteData.news.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'news-item-block';
+                div.dataset.index = index;
+                div.style.marginBottom = '15px';
+                div.style.padding = '10px';
+                div.style.border = '1px solid #eee';
+                div.style.borderRadius = '8px';
+                const imgVal = (item.image || '').replace(/"/g, '&quot;');
+                const subjVal = (item.subject || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                const contVal = (item.content || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+                div.innerHTML = `
+                    <div class="form-group">
+                        <label>Google Drive 圖片連結</label>
+                        <input type="text" class="news-image-input" value="${imgVal}" placeholder="貼上 Drive 分享連結，網頁會自動顯示">
+                    </div>
+                    <div class="form-group">
+                        <label>或上傳 PNG 圖片</label>
+                        <input type="file" class="news-file-input" accept="image/png" data-index="${index}">
+                    </div>
+                    <div class="form-group">
+                        <label>消息標題 (手動填寫)</label>
+                        <input type="text" class="news-subject-input" value="${subjVal}" placeholder="例如：春季班開課表">
+                    </div>
+                    <div class="form-group">
+                        <label>消息內容 (手動填寫，選填)</label>
+                        <textarea class="news-content-input" rows="2" placeholder="消息內文">${contVal}</textarea>
+                    </div>
+                    <button class="delete-btn" onclick="deleteNewsItem(${index})">❌ 刪除此則</button>
+                `;
+                container.appendChild(div);
+                const fileInput = div.querySelector('.news-file-input');
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files && e.target.files[0];
+                    if (!file || !file.type.match(/^image\/png$/)) {
+                        if (file) alert('請選擇 PNG 圖檔');
+                        return;
+                    }
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        div.querySelector('.news-image-input').value = ev.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+
+        function applyChanges() {
+            websiteData.mainTitle = document.getElementById('adminMainTitle').value;
+            websiteData.mainSubtitle = document.getElementById('adminMainSubtitle').value;
+            websiteData.phone = document.getElementById('adminPhone').value;
+            websiteData.email = document.getElementById('adminEmail').value;
+
+            const subjects = document.querySelectorAll('.news-subject-input');
+            const images = document.querySelectorAll('.news-image-input');
+            const contents = document.querySelectorAll('.news-content-input');
+            
+            websiteData.news = [];
+            images.forEach((input, i) => {
+                const img = input.value.trim();
+                const subj = (subjects[i] && subjects[i].value.trim()) || '';
+                const cont = (contents[i] && contents[i].value.trim()) || '';
+                if (img || subj || cont) {
+                    websiteData.news.push({ image: img, subject: subj, content: cont });
+                }
+            });
+
+            websiteData.lastUpdated = new Date().toLocaleString('zh-TW', { dateStyle: 'long', timeStyle: 'short' });
+            localStorage.setItem('sunhome_data', JSON.stringify(websiteData));
+            updateFrontEnd();
+            var el = document.getElementById('displayLastUpdated');
+            if (el) el.textContent = websiteData.lastUpdated;
+            alert("更新成功！");
+        }
+
+        async function sha256(m) {
+            const b = new TextEncoder().encode(m);
+            const h = await crypto.subtle.digest('SHA-256', b);
+            return Array.from(new Uint8Array(h)).map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function checkPassword() {
+            const pass = document.getElementById('passwordInput').value;
+            if (await sha256(pass) === ADMIN_PASSWORD_HASH) {
+                closeLoginModal();
+                document.getElementById('adminPanel').classList.add('open');
+                document.getElementById('adminMainTitle').value = websiteData.mainTitle;
+                document.getElementById('adminMainSubtitle').value = websiteData.mainSubtitle;
+                document.getElementById('adminPhone').value = websiteData.phone;
+                document.getElementById('adminEmail').value = websiteData.email;
+                document.getElementById('displayLastUpdated').textContent = websiteData.lastUpdated || '尚未更新';
+                renderNewsItemsInAdmin();
+            } else { alert("密碼錯誤"); }
+        }
+
+        function addNewsItem() { websiteData.news.push({ image: '', subject: '', content: '' }); renderNewsItemsInAdmin(); }
+        function deleteNewsItem(index) { websiteData.news.splice(index, 1); renderNewsItemsInAdmin(); }
+        function showLoginModal() { document.getElementById('loginModal').classList.add('show'); }
+        function closeLoginModal() { document.getElementById('loginModal').classList.remove('show'); }
+        function hideAdminPanel() { document.getElementById('adminPanel').classList.remove('open'); }
+        function openLightbox(src) { document.getElementById('fullImage').src = src; document.getElementById('imageModal').style.display = 'block'; }
+        function closeLightbox() { document.getElementById('imageModal').style.display = 'none'; }
+
+        document.getElementById('contactForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const msgEl = document.getElementById('formMessage');
+            msgEl.style.display = 'block';
+            if (FORMSPREE_ID === 'YOUR_FORM_ID') {
+                msgEl.style.color = '#c53030';
+                msgEl.textContent = '請先在程式碼中設定 Formspree ID（見本頁最上方說明）。';
+                return;
+            }
+            msgEl.style.color = '#666';
+            msgEl.textContent = '送出中…';
+            try {
+                const formData = new FormData(this);
+                const res = await fetch('https://formspree.io/f/' + FORMSPREE_ID, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    msgEl.style.color = '#276749';
+                    msgEl.textContent = '已送出，感謝您！我們會盡快與您聯絡。';
+                    this.reset();
+                } else {
+                    msgEl.style.color = '#c53030';
+                    msgEl.textContent = '送出失敗，請稍後再試或直接來電。';
+                }
+            } catch (err) {
+                msgEl.style.color = '#c53030';
+                msgEl.textContent = '網路錯誤，請檢查連線後再試。';
+            }
+        });
+
+        window.onload = () => {
+            const saved = localStorage.getItem('sunhome_data');
+            if (saved) websiteData = JSON.parse(saved);
+
+            // 若舊資料中的電話還不是府中校／站前校格式，強制更新為最新格式
+            if (!websiteData.phone || !websiteData.phone.includes('府中校')) {
+                websiteData.phone = '府中校(02) 22710029\n站前校(02) 29697793';
+            }
+            updateFrontEnd();
+
+            // 課程切換
+            document.querySelectorAll('.course-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.course-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.course-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.getAttribute('data-tab')).classList.add('active');
+                });
+            });
+        };
+    </script>
+</body>
+</html>
